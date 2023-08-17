@@ -1,8 +1,11 @@
 import React, { useContext, useState } from 'react'
 import Papa from 'papaparse';
 import { functions } from './ContextAPI/ContextAPI';
-import { Link } from "react-router-dom";
+import { Bar, BarChart, CartesianGrid, Legend, Tooltip, XAxis, YAxis } from 'recharts';
+
 import { useNavigate } from "react-router-dom";
+import Swal from 'sweetalert2';
+
 const Step2 = () => {
   const {projectName,
     projectDescription,
@@ -11,8 +14,11 @@ const Step2 = () => {
     projectDetails,
     getProjectDetails,
     }=useContext(functions)
-
+const[chartData,setChartData]=useState([])
+let datas=chartData.filter((x)=>!isNaN(x.KP)&!isNaN(x.X)&!isNaN(x.Y)&!isNaN(x.Z))
+console.log(datas)
   const [Datas, setDatas] = useState({})
+
   const navigate=useNavigate()
   const [csvData, setCsvData] = useState([]);
   const [fileUploaded, setFileUploaded] = useState(false);
@@ -49,10 +55,11 @@ const[minZ,setMinZ]=useState(0)
       Y: parseFloat(row[2]), 
       Z: parseFloat(row[3]), 
     }));
-
+    setChartData(dataObjects)
     updateMinMaxValues(dataObjects);
   };
   const updateMinMaxValues = (dataObjects) => {
+    const kpValues = dataObjects.map((row) => row.KP).filter((value) => !isNaN(value));
     const xValues = dataObjects.map((row) => row.X).filter((value) => !isNaN(value));
     const yValues = dataObjects.map((row) => row.Y).filter((value) => !isNaN(value));
     const zValues = dataObjects.map((row) => row.Z).filter((value) => !isNaN(value));
@@ -65,6 +72,7 @@ const[minZ,setMinZ]=useState(0)
     const minZ = Math.min(...zValues);
   
     setDatas({
+      kpValues,
       max_X: maxX,
       min_X: minX,
       max_Y: maxY,
@@ -77,13 +85,33 @@ const[minZ,setMinZ]=useState(0)
 
   let handleSubmit = (e) => {
     e.preventDefault();
+   
     let max_X = e.target.max_X.value;
     let min_X = e.target.min_X.value;
     let max_Y = e.target.max_Y.value;
     let min_Y = e.target.min_Y.value;
     let max_Z = e.target.max_Z.value;
     let min_Z = e.target.min_Z.value;
-
+    if (
+      projectName === '' ||
+      projectDescription === '' ||
+      clientValue === '' ||
+      contractor === '' ||
+      (!fileUploaded &&
+        (max_X === '' ||
+        min_X === '' ||
+        max_Y === '' ||
+        min_Y === '' ||
+        max_Z === '' ||
+        min_Z === ''))
+    ) {
+      Swal.fire(
+        'Error!',
+        'Please Fill Up all forms',
+        'error'
+      )
+      return;
+    }
     if (!fileUploaded) {
       max_X = maxX;
       min_X = minX;
@@ -108,14 +136,23 @@ const[minZ,setMinZ]=useState(0)
 
     getProjectDetails(projectDetails);
     localStorage.setItem('project',JSON.stringify(projectDetails))
+    Swal.fire(
+      'Good job!',
+      'Form Submit Done!',
+      'success'
+    )
     navigate('/results')
+
   };
+
   return (
     <>
-         <form onSubmit={handleSubmit} className="max-w-xl mx-auto mt-8">
-      <h2 className="text-2xl font-semibold mb-4">Step 2: Project Summary</h2>
+    <h2 className="text-2xl font-semibold mb-4 text-gray-400">Step 2: Project Summary</h2>
+         <form onSubmit={handleSubmit} className=" mx-auto grid-cols-1 lg:grid-cols-2 grid gap-7 ">
+      
+      <div>
       <div className="mb-4">
-        <label className="block font-medium">Project Name</label>
+        <label className="block font-medium text-gray-400 mb-2">Project Name</label>
         <input
           type="text"
           name="projectName"
@@ -125,8 +162,10 @@ const[minZ,setMinZ]=useState(0)
           readOnly
         />
       </div>
+
+
       <div className="mb-4">
-        <label className="block font-medium">Project Description</label>
+        <label className="block font-medium text-gray-400 mb-2">Project Description</label>
         <textarea
           name="projectDescription"
           className="w-full border rounded px-3 py-2"
@@ -137,7 +176,7 @@ const[minZ,setMinZ]=useState(0)
         />
       </div>
       <div className="mb-4">
-        <label className="block font-medium">Client</label>
+        <label className="block font-medium text-gray-400 mb-2">Client</label>
         <input
           type="text"
           name="client"
@@ -148,7 +187,7 @@ const[minZ,setMinZ]=useState(0)
         />
       </div>
       <div className="mb-4">
-        <label className="block font-medium">Contractor</label>
+        <label className="block font-medium text-gray-400 mb-2">Contractor</label>
         <input
           type="text"
           name="contractor"
@@ -158,9 +197,20 @@ const[minZ,setMinZ]=useState(0)
 readOnly
         />
       </div>
-{fileUploaded===true? <section>
+      <div className="mb-4">
+        <label className="block font-medium text-gray-400 mb-2">File Upload (CSV)</label>
+        <input
+          type="file"
+          accept=".csv"
+          onChange={handleFileUpload}
+          className="file-input file-input-bordered w-full max-w-xs"
+        />
+      </div>
+      </div>
+
+{fileUploaded===true? <section className='grid grid-cols-1 lg:grid-cols-2 gap-3'>
 <div className="mb-4">
-        <label className="block font-medium">max_X</label>
+        <label className="block font-medium text-gray-400 mb-2">max_X</label>
         <input
           type="number"
           name="max_X"
@@ -171,7 +221,7 @@ readOnly
         />
       </div>
       <div className="mb-4">
-        <label className="block font-medium">min_X</label>
+        <label className="block font-medium text-gray-400 mb-2">min_X</label>
         <input
           type="number"
           name="min_X"
@@ -182,7 +232,7 @@ readOnly
         />
       </div>
       <div className="mb-4">
-        <label className="block font-medium">max_Y</label>
+        <label className="block font-medium text-gray-400 mb-2">max_Y</label>
         <input
           type="number"
           name="max_Y"
@@ -194,7 +244,7 @@ readOnly
         />
       </div>
       <div className="mb-4">
-        <label className="block font-medium">min_Y</label>
+        <label className="block font-medium text-gray-400 mb-2" >min_Y</label>
         <input
           type="number"
           name="min_Y"
@@ -206,7 +256,7 @@ readOnly
         />
       </div>
       <div className="mb-4">
-        <label className="block font-medium">max_Z</label>
+        <label className="block font-medium text-gray-400 mb-2">max_Z</label>
         <input
           type="number"
           name="max_Z"
@@ -218,7 +268,7 @@ readOnly
         />
       </div>
       <div className="mb-4">
-        <label className="block font-medium">min_Z</label>
+        <label className="block font-medium text-gray-400 mb-2">min_Z</label>
         <input
           type="number"
           name="min_Z"
@@ -229,9 +279,9 @@ readOnly
  
         />
       </div>
-</section>: <section>
+</section>: <section className='grid grid-cols-1 lg:grid-cols-2 gap-3'>
 <div className="mb-4">
-        <label className="block font-medium">max_X</label>
+        <label className="block font-medium text-gray-400 mb-2">max_X</label>
         <input
           type="number"
           name="max_X"
@@ -241,17 +291,17 @@ readOnly
         />
       </div>
       <div className="mb-4">
-        <label className="block font-medium">min_X</label>
+        <label className="block font-medium text-gray-400 mb-2">min_X</label>
         <input
           type="number"
           name="min_X"
           onChange={(e)=>setMinX(e.target.value)}
-          className="w-full border rounded px-3 py-2"
+          className="w-full border rounded px-3 py-2 "
           placeholder="Enter min_X value"
         />
       </div>
       <div className="mb-4">
-        <label className="block font-medium">max_Y</label>
+        <label className="block font-medium text-gray-400 mb-2">max_Y</label>
         <input
           type="number"
           name="max_Y"
@@ -262,7 +312,7 @@ readOnly
         />
       </div>
       <div className="mb-4">
-        <label className="block font-medium">min_Y</label>
+        <label className="block font-medium text-gray-400 mb-2">min_Y</label>
         <input
           type="number"
           name="min_Y"
@@ -273,7 +323,7 @@ readOnly
         />
       </div>
       <div className="mb-4">
-        <label className="block font-medium">max_Z</label>
+        <label className="block font-medium text-gray-400 mb-2">max_Z</label>
         <input
           type="number"
           name="max_Z"
@@ -284,7 +334,7 @@ readOnly
         />
       </div>
       <div className="mb-4">
-        <label className="block font-medium">min_Z</label>
+        <label className="block font-medium text-gray-400 mb-2">min_Z</label>
         <input
           type="number"
           name="min_Z"
@@ -295,26 +345,36 @@ readOnly
         />
       </div>
 </section>}  
-      <div className="mb-4">
-        <label className="block font-medium">File Upload (CSV)</label>
-        <input
-          type="file"
-          accept=".csv"
-          onChange={handleFileUpload}
-          className="file-input file-input-bordered w-full max-w-xs"
-        />
+
+      <div> 
+      <BarChart 
+      width={350}
+   height={250}  data={datas}>
+  <CartesianGrid strokeDasharray="3 3" />
+  <XAxis dataKey="KP" />
+  <YAxis dataKey="X" />
+  <Tooltip />
+  <Legend />
+  <Bar dataKey="X" fill="#8884d8" />
+</BarChart>
       </div>
 
-      <div className="mt-4">
+
+
+
+
+
+      <div className="mt-4 text-center">
       
        <button
-          className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
+          className=" btn  text-white shadow-lg bg-gradient-to-r from-green-300 via-blue-500 to-purple-600 rounded-lg w-full lg:w-80" 
         >
  Submit
         </button>
         
       </div>
     </form>
+
     </>
   )
 }

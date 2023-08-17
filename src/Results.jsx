@@ -36,12 +36,14 @@ let downloadPdf=()=>{
 
   return (
 <>
-
-<div className="overflow-x-auto" ref={pdfRef}>
+<div className='text-end '>
+<button className=" btn mt-6  text-white px-8 shadow-lg bg-gradient-to-r from-green-300 via-blue-500 to-purple-600 rounded-lg" onClick={downloadPdf}>Download PDF</button>
+</div>
+<div className="overflow-x-auto mt-32" ref={pdfRef}>
   <table className="table">
     {/* head */}
     <thead>
-      <tr>
+      <tr className='bg-purple-400  text-black font-bold '>
 
         <th>Project Name</th>
         <th>Project Description</th>
@@ -57,18 +59,18 @@ let downloadPdf=()=>{
     </thead>
     <tbody>
 
-      <tr>
+      <tr className='bg-blue-300'>
      
-        <td>{project.projectName}</td>
-        <td>{project.projectDescription}</td>
-        <td>{project.clientValue}</td>
-        <td>{project.contractor}</td>
-        <td>{project.max_X}</td>
-        <td>{project.min_X}</td>
-        <td>{project.max_Y}</td>
-        <td>{project.min_Y}</td>
-        <td>{project.max_Z}</td>
-        <td>{project.min_Z}</td>
+        <td>{project?.projectName}</td>
+        <td>{project?.projectDescription}</td>
+        <td>{project?.clientValue}</td>
+        <td>{project?.contractor}</td>
+        <td>{project?.max_X}</td>
+        <td>{project?.min_X}</td>
+        <td>{project?.max_Y}</td>
+        <td>{project?.min_Y}</td>
+        <td>{project?.max_Z}</td>
+        <td>{project?.min_Z}</td>
       </tr>
 
     
@@ -77,7 +79,7 @@ let downloadPdf=()=>{
 </div>
 
 
-<button className='btn bg-blue-400' onClick={downloadPdf}>Download PDF</button>
+
 
 
 

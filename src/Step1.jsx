@@ -13,10 +13,10 @@ const Step1 = () => {
 console.log(projectName,projectDescription, clientValue,contractor,)
   return (
     <>
-        <div className="max-w-xl mx-auto mt-8">
-      <h2 className="text-2xl font-semibold mb-4">Step 1: Project Information</h2>
+        <div className=" mx-auto ">
+      <h2 className="text-2xl font-semibold mb-4 text-gray-400">Step 1: Project Information</h2>
       <div className="mb-4">
-        <label className="block font-medium">Project Name</label>
+        <label className="block font-medium text-gray-400 mb-2">Project Name</label>
         <input
           type="text"
           name="projectName"
@@ -27,7 +27,7 @@ console.log(projectName,projectDescription, clientValue,contractor,)
         />
       </div>
       <div className="mb-4">
-        <label className="block font-medium">Project Description</label>
+        <label className="block font-medium text-gray-400 mb-2">Project Description</label>
         <textarea
           name="projectDescription"
           defaultValue={projectDescription}
@@ -39,7 +39,7 @@ console.log(projectName,projectDescription, clientValue,contractor,)
         />
       </div>
       <div className="mb-4">
-        <label className="block font-medium">Client</label>
+        <label className="block font-medium text-gray-400 mb-2">Client</label>
         <input
           type="text"
           name="client"
@@ -51,7 +51,7 @@ console.log(projectName,projectDescription, clientValue,contractor,)
         />
       </div>
       <div className="mb-4">
-        <label className="block font-medium">Contractor</label>
+        <label className="block font-medium text-gray-400 mb-2">Contractor</label>
         <input
           type="text"
           name="contractor"
@@ -68,7 +68,7 @@ console.log(projectName,projectDescription, clientValue,contractor,)
       <div className="mt-4">
        <Link to='/2'> 
        <button
-          className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
+          className=" btn w-32  text-white px-8 shadow-lg bg-gradient-to-r from-green-300 via-blue-500 to-purple-600 rounded-lg"
   
         >
           Next
